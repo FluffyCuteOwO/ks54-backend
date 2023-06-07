@@ -1,0 +1,60 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Settings {
+  type          weekType @unique @default(numerator)
+  typeOfSetting String   @id
+  changed       Boolean  @default(false)
+}
+
+model Group {
+  id          Int           @id @default(autoincrement())
+  name        String        @unique
+  Schedule    Schedule[]
+  Replacement Replacement[]
+}
+
+model Schedule {
+  id        Int      @id @default(autoincrement())
+  day       day
+  groupName String
+  items     Json[]
+  weekType  weekType
+  Group     Group    @relation(fields: [groupName], references: [name], onDelete: Cascade)
+}
+
+model Replacement {
+  id        Int      @id @default(autoincrement())
+  day       day
+  groupName String
+  items     Json[]
+  weekType  weekType
+  Group     Group    @relation(fields: [groupName], references: [name], onDelete: Cascade)
+}
+
+model User {
+  uuid     String @id @default(uuid())
+  username String @unique
+  password String
+}
+
+enum weekType {
+  numerator
+  denominator
+}
+
+enum day {
+  Monday
+  Tuesday
+  Wednesday
+  Thursday
+  Friday
+  Saturday
+  Sunday
+}
